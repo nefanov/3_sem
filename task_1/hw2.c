@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
-int str_size = 20000; //size of input
+int str_size = 2097152; //size of input
 
 char ** parse_cmd(const char * cmd)
 {
@@ -69,7 +69,7 @@ static void run_cmd(const char *cmd)
    		 return;	
 	}
 	char **args = parse_cmd(cmd);
-	execv(args[0], args);
+	execvp(args[0], args);
  	printf("exec* failed\n");
 }
 
