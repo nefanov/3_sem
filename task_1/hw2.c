@@ -14,7 +14,7 @@ char ** parse_cmd(const char * cmd)
         int counter = 0; //number of words 
         for (int i = 0; i < len; i++)
         {
-                if ((cmd[i] != ' ' && cmd[i] != ';' && cmd[i] != '_') && (i == 0 || cmd[i] == ' ' || cmd[i] != ';' || cmd[i] != '_'))
+                if ((cmd[i] != ' ' && cmd[i] != ';' && cmd[i] != '_') && (i == 0 || cmd[i - 1] == ' ' || cmd[i - 1] != ';' || cmd[i - 1] != '_'))
                 {
                         counter++;
                 }
@@ -60,17 +60,17 @@ static void run_cmd(const char *cmd)
 	{
     		printf("fork failed!\n");
   	 	 return;
- 	 }
- 	 if (pid) 
-	 {
+	}
+ 	if (pid) 
+	{
 		 int status;
    		 waitpid(pid, &status, 0);
    		 printf("\nRet code: %d\n", WEXITSTATUS(status));
    		 return;	
-	 }
-	 char **args = parse_cmd(cmd);
-	 execv(args[0], args);
- 	 printf("exec* failed\n");
+	}
+	char **args = parse_cmd(cmd);
+	execv(args[0], args);
+ 	printf("exec* failed\n");
 }
 
 int main()
