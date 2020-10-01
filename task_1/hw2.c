@@ -81,7 +81,6 @@ int main()
 		cmd = (char*)malloc(str_size * sizeof(char));
 		gets(cmd);
 		run_cmd(cmd);
-		exit(12);
 	}
 	return 0;
 }
