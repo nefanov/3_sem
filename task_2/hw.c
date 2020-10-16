@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+//void* ptrwr = write;
+//void* ptrrd = read;
 typedef struct {
   int txd[2]; 
-  int rxd[2]; 
+  int rxd[2];
+ // int (*wr)(int, char *, int) = (int (*)(int, char *, int))ptrwr;
+ // int (*rd)(int, char *, int) = (int (*)(int, char *, int))ptrrd; 
 } dpipe_t;
 
 int main()
 {
-	char buf[4096];
+	char buf[10];
   	int size;
 	dpipe_t fd;
 	if (pipe(fd.txd) < 0) 
@@ -34,14 +37,15 @@ int main()
 		while(1)
 		{
 			printf("Ready for sending(Parent)\n");
-    			size = read(0, buf, sizeof(buf)-1); 
-      			buf[size] = '\0'; // the text string data is expected
-      			write(fd.txd[1], buf, size);
-      			printf("Send: %s\n", buf);
-			size = read(fd.rxd[0], buf, sizeof(buf) - 1);
-			buf[size] = '\0';
-			printf("Received from child: %s\n", buf);
-
+    		        while((size = read(0, buf, sizeof(buf)-1)) > 0)
+			{
+				buf[size] = '\0'; // the text string data is expected
+      				printf("Send to child: %s\n", buf);
+				write(fd.txd[1],buf, size);
+				size = read(fd.rxd[0], buf, sizeof(buf) - 1);
+				buf[size] = '\0';
+				printf("Received from child: %s\n", buf);
+			}
 		}
   	}
 	else 
@@ -50,15 +54,16 @@ int main()
 		close(fd.rxd[0]);
 		while(1)
 		{
-			size = read(fd.txd[0], buf, sizeof(buf)-1);
-      			buf[size] = '\0'; // the text string data is expected
-      			printf("Received from parent: %s\n", buf);
-			printf("Ready for sending(Child)\n");
-			size = read(0, buf, sizeof(buf) - 1);
-			buf[size] = '\0';
-			write(fd.rxd[1], buf, size);
-			printf("Send: %s\n", buf);
+			while((size = read(fd.txd[0], buf, sizeof(buf)-1)) > 0)
+			{
+				buf[size] = '\0'; // the text string data is expected
+      				printf("Received from parent: %s\n", buf);
+				printf("Send to parent: %s\n", buf);
+				write(fd.rxd[1], buf, size);
+			}
     		}
   	}
   return 0;
 }
+
+
