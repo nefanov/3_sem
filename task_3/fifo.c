@@ -11,7 +11,7 @@
 #define FIFO "fifo_example"
 int main()
 {
-  	char buf[1000010];
+	char buf[1000100];
   	int size;
 	int n;
 	printf("Choose the size:");
@@ -26,22 +26,44 @@ int main()
   
   	if (pid) 
   	{ //parent
-		size = n;
-		for (int i = 0; i < size; i++)
-		{
-			buf[i] = 'a';
-		}
-		buf[size] = '\0';
-
 		int time1 = clock();
-
-		mknod(FIFO, S_IFIFO | 0666, 0);
-		//printf("Waiting for a reader\n");
-		int fd = open(FIFO, O_WRONLY);
-		//printf("A reader is connected\n");
-
-		write(fd, buf, size);
-
+		if (n <= 1000000)
+		{
+		        mknod(FIFO, S_IFIFO |0666, 0);
+                	int fd = open(FIFO, O_WRONLY);
+			size = n;
+			for (int i = 0; i < size; i++)
+			{
+				buf[i] = 'a';
+			}
+			buf[size] = '\0';
+			write(fd, buf, size);
+		}
+		else
+		{
+                	mknod(FIFO, S_IFIFO | 0666, 0);
+                	int fd = open(FIFO, O_WRONLY);
+			size = 1000000;
+			for (int i = 0; i < n / size; i++)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					buf[j] = 'a';
+				}
+				buf[size] = '\0';
+				write(fd, buf, size);
+			}
+			size = n % 1000000;
+			if (size > 0)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					buf[j] = 'a';
+				}
+				buf[size] = '\0';
+				write(fd, buf, size);
+			}
+		}
 		int status;
 		waitpid(pid, &status, 0);
 		int time2 = clock();
@@ -49,15 +71,29 @@ int main()
   	}
   	else 
 	{ //child
-	    	mknod(FIFO, S_IFIFO | 0666, 0);
-		//printf("Waiting for a writer\n");
-		int fd = open(FIFO, O_RDONLY);
-		//printf("A writer is connected\n");
-
-		size = read(fd, buf, sizeof(buf) - 1);
-		buf[size] = '\0';
-		//printf("Received: %s\n", buf);
+		if (n <= 1000000)
+		{
+			mknod(FIFO, S_IFIFO | 0666, 0);
+                	int fd = open(FIFO, O_RDONLY);
+			size = read(fd, buf, sizeof(buf) - 1);
+			buf[size] = '\0';
+		}
+		else
+		{
+               		mknod(FIFO, S_IFIFO | 0666, 0);
+                	int fd = open(FIFO, O_RDONLY);
+			int step = 1000000;
+			for (int i = 0; i < n / step; i++)
+			{
+				size = read(fd, buf, sizeof(buf) - 1);
+				buf[size] = '\0';
+			}
+			if (n % step > 0)
+			{
+				size = read(fd, buf, sizeof(buf) - 1);
+				buf[size] = '\0';
+			}
+		}
   	}
-  
   	return 0;
 }
