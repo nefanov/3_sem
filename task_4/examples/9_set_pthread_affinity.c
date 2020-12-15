@@ -1,5 +1,8 @@
-#include <sched.h>
 #define _GNU_SOURCE
+#include <sched.h>
+#include <asm/errno.h>
+#include <pthread.h>
+
 // core_id = 0, 1, ... n-1, where n is the system's number of cores
 
 int stick_this_thread_to_core(int core_id) {
