@@ -1,0 +1,17 @@
+1 thread - 42.66 sec
+2 threads - 22.53 sec
+3 threads - 15.84 sec
+4 threads - 11.87 sec
+5 threads - 11.45 sec
+6 threads - 12.35 sec
+7 threads - 11.63 sec
+8 threads - 11.43 sec
+9 threads - 11.34 sec
+10 threads - 11.60 sec
+12 threads - 11.28 sec
+16 threads - 11.31 sec
+32 threads - 11.19 sec
+64 threads - 11.13 sec
+200 threads - 11.10 sec
+1000 threads - 11.12 sec
+
